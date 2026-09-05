@@ -1,43 +1,45 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import Badge from './Badge';
-import Mascot from './Mascot';
-import PlaybackControls from './PlaybackControls';
-import TryItYourself from './TryItYourself';
-import ComplexityChart from './ComplexityChart';
-import QuizSection from './QuizSection';
-import CodeBlock from './CodeBlock';
-import CodeTracer from './CodeTracer';
-import { getVisualizer } from './visualizers';
-import { getPracticeExercises } from './exercises';
-import { getAccent, badgeTone } from '@/lib/accentStyles';
-import { getAdjacentAlgorithms } from '@/lib/algorithms/registry';
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import Badge from "./Badge";
+import Mascot from "./Mascot";
+import PlaybackControls from "./PlaybackControls";
+import TryItYourself from "./TryItYourself";
+import ComplexityChart from "./ComplexityChart";
+import QuizSection from "./QuizSection";
+import CodeBlock from "./CodeBlock";
+import CodeTracer from "./CodeTracer";
+import { getVisualizer } from "./visualizers";
+import { getPracticeExercises } from "./exercises";
+import { getAccent, badgeTone } from "@/lib/accentStyles";
+import { getAdjacentAlgorithms } from "@/lib/algorithms/registry";
 
 const SPEED_MS = { 1: 1500, 2: 1050, 3: 700, 4: 450, 5: 250 };
 
 function moodForFrame(frame, type) {
-  if (!frame) return 'happy';
-  if (type === 'search') {
-    if (frame.found && frame.found >= 0) return 'excited';
-    if (frame.found === -1) return 'oops';
-    return 'thinking';
+  if (!frame) return "happy";
+  if (type === "search") {
+    if (frame.found && frame.found >= 0) return "excited";
+    if (frame.found === -1) return "oops";
+    return "thinking";
   }
-  if (type === 'window') {
-    if (frame.finished) return 'excited';
-    if (frame.adding?.length) return 'excited';
-    return 'thinking';
+  if (type === "window") {
+    if (frame.finished) return "excited";
+    if (frame.adding?.length) return "excited";
+    return "thinking";
   }
-  if (frame.swapping?.length) return 'excited';
-  if (frame.comparing?.length) return 'thinking';
-  return 'happy';
+  if (frame.swapping?.length) return "excited";
+  if (frame.comparing?.length) return "thinking";
+  return "happy";
 }
 
 export default function AlgorithmDetail({ config }) {
   const [array, setArray] = useState(config.defaultInput);
-  const [target, setTarget] = useState(config.defaultTarget ?? config.defaultInput[0]);
+  const [target, setTarget] = useState(
+    config.defaultTarget ?? config.defaultInput[0],
+  );
   const [windowSize, setWindowSize] = useState(config.defaultWindowSize ?? 3);
   const [stepIndex, setStepIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -45,14 +47,17 @@ export default function AlgorithmDetail({ config }) {
 
   // Keep the window size valid whenever the array itself changes size.
   useEffect(() => {
-    if (config.type !== 'window') return;
+    if (config.type !== "window") return;
     const maxWindow = Math.max(config.minWindow ?? 2, array.length - 1);
-    setWindowSize((k) => Math.min(Math.max(k, config.minWindow ?? 2), maxWindow));
+    setWindowSize((k) =>
+      Math.min(Math.max(k, config.minWindow ?? 2), maxWindow),
+    );
   }, [array, config.type, config.minWindow]);
 
   const steps = useMemo(() => {
-    if (config.type === 'search') return config.generateSteps(array, target);
-    if (config.type === 'window') return config.generateSteps(array, windowSize);
+    if (config.type === "search") return config.generateSteps(array, target);
+    if (config.type === "window")
+      return config.generateSteps(array, windowSize);
     return config.generateSteps(array);
   }, [config, array, target, windowSize]);
 
@@ -68,7 +73,10 @@ export default function AlgorithmDetail({ config }) {
       setIsPlaying(false);
       return undefined;
     }
-    const timer = setTimeout(() => setStepIndex((i) => Math.min(i + 1, steps.length - 1)), SPEED_MS[speed]);
+    const timer = setTimeout(
+      () => setStepIndex((i) => Math.min(i + 1, steps.length - 1)),
+      SPEED_MS[speed],
+    );
     return () => clearTimeout(timer);
   }, [isPlaying, stepIndex, steps.length, speed]);
 
@@ -82,17 +90,24 @@ export default function AlgorithmDetail({ config }) {
 
   return (
     <div className="mx-auto max-w-4xl px-5 pb-24 pt-8 sm:px-8">
-      <Link href="/" className="mb-6 inline-flex items-center gap-1 text-sm font-medium text-ink-500 transition hover:text-ink-900">
+      <Link
+        href="/"
+        className="mb-6 inline-flex items-center gap-1 text-sm font-medium text-ink-500 transition hover:text-ink-900"
+      >
         ← Back to all lessons
       </Link>
 
       {/* Header */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl ${accent.soft} text-4xl`}>
+        <div
+          className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl ${accent.soft} text-4xl`}
+        >
           {config.emoji}
         </div>
         <div>
-          <h1 className="font-heading text-3xl text-ink-900 sm:text-4xl">{config.title}</h1>
+          <h1 className="font-heading text-3xl text-ink-900 sm:text-4xl">
+            {config.title}
+          </h1>
           <p className="mt-1 text-ink-500">{config.tagline}</p>
         </div>
       </div>
@@ -106,7 +121,9 @@ export default function AlgorithmDetail({ config }) {
       <section className="mb-10 flex flex-col gap-4 rounded-3xl border border-cream-300 bg-white/70 p-6 sm:flex-row sm:items-start sm:gap-6 sm:p-8">
         <Mascot mood="happy" size={64} className="shrink-0" />
         <div>
-          <h2 className="font-heading text-xl text-ink-900">What is it, really?</h2>
+          <h2 className="font-heading text-xl text-ink-900">
+            What is it, really?
+          </h2>
           <p className="mt-2 leading-relaxed text-ink-700">{config.analogy}</p>
         </div>
       </section>
@@ -136,7 +153,9 @@ export default function AlgorithmDetail({ config }) {
             className="flex items-start gap-3 rounded-3xl bg-cream-100 p-4"
           >
             <Mascot size={40} mood={moodForFrame(frame, config.type)} />
-            <p className="pt-1.5 text-sm leading-relaxed text-ink-700 sm:text-base">{frame?.message}</p>
+            <p className="pt-1.5 text-sm leading-relaxed text-ink-700 sm:text-base">
+              {frame?.message}
+            </p>
           </motion.div>
         </AnimatePresence>
 
@@ -149,7 +168,9 @@ export default function AlgorithmDetail({ config }) {
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
           onStepBack={() => setStepIndex((i) => Math.max(0, i - 1))}
-          onStepForward={() => setStepIndex((i) => Math.min(steps.length - 1, i + 1))}
+          onStepForward={() =>
+            setStepIndex((i) => Math.min(steps.length - 1, i + 1))
+          }
           onReset={() => {
             setStepIndex(0);
             setIsPlaying(false);
@@ -161,14 +182,23 @@ export default function AlgorithmDetail({ config }) {
 
       {/* How it works */}
       <section className="mb-10">
-        <h2 className="mb-4 font-heading text-xl text-ink-900">How it works, step by step</h2>
+        <h2 className="mb-4 font-heading text-xl text-ink-900">
+          How it works, step by step
+        </h2>
         <ol className="flex flex-col gap-3">
           {config.howItWorks.map((step, i) => (
-            <li key={i} className="flex items-start gap-3 rounded-2xl border border-cream-300 bg-white/70 p-4">
-              <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${accent.soft} ${accent.softText} text-sm font-bold`}>
+            <li
+              key={i}
+              className="flex items-start gap-3 rounded-2xl border border-cream-300 bg-white/70 p-4"
+            >
+              <span
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${accent.soft} ${accent.softText} text-sm font-bold`}
+              >
                 {i + 1}
               </span>
-              <p className="text-sm leading-relaxed text-ink-700 sm:text-base">{step}</p>
+              <p className="text-sm leading-relaxed text-ink-700 sm:text-base">
+                {step}
+              </p>
             </li>
           ))}
         </ol>
@@ -183,7 +213,10 @@ export default function AlgorithmDetail({ config }) {
 
       {/* Complexity */}
       <section className="mb-10">
-        <ComplexityChart complexity={config.complexity} complexityPlain={config.complexityPlain} />
+        <ComplexityChart
+          complexity={config.complexity}
+          complexityPlain={config.complexityPlain}
+        />
       </section>
 
       {/* Extra hands-on practice, for the ideas that need a bit more repetition */}
@@ -195,10 +228,14 @@ export default function AlgorithmDetail({ config }) {
 
       {/* Quiz */}
       <section className="mb-14">
-        <QuizSection slug={config.slug} quiz={config.quiz} accent={config.accent} />
+        <QuizSection
+          slug={config.slug}
+          quiz={config.quiz}
+          accent={config.accent}
+        />
       </section>
 
-      {/* Prev/Next — hidden when there's only one lesson in the catalog */}
+      {/* Prev/Next - hidden when there's only one lesson in the catalog */}
       {showNav && (
         <nav className="flex flex-col gap-3 border-t border-cream-300 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <Link

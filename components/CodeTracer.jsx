@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { tokenize, TOKEN_CLASSES } from '@/lib/highlight';
+import { motion, AnimatePresence } from "framer-motion";
+import { tokenize, TOKEN_CLASSES } from "@/lib/highlight";
 
 function VarChip({ name, value }) {
   return (
@@ -30,22 +30,24 @@ function VarChip({ name, value }) {
 // the same `frame`, produced by the algorithm's generateSteps()).
 export default function CodeTracer({ code, frame }) {
   if (!frame) return null;
-  const lines = code.split('\n');
+  const lines = code.split("\n");
   const activeLine = frame.codeLine;
   const vars = frame.vars || {};
 
   const loopBlurb =
-    frame.loop === 'build'
-      ? 'Loop 1 (building): runs k times, adding one number to windowSum each round — this builds our very first window.'
-      : frame.loop === 'slide'
-        ? 'Loop 2 (sliding): runs once per remaining position — each round drops the old left number, adds the new right number, and checks if this is our best sum yet.'
-        : 'Not inside a loop right now.';
+    frame.loop === "build"
+      ? "Loop 1 (building): runs k times, adding one number to windowSum each round - this builds our very first window."
+      : frame.loop === "slide"
+        ? "Loop 2 (sliding): runs once per remaining position - each round drops the old left number, adds the new right number, and checks if this is our best sum yet."
+        : "Not inside a loop right now.";
 
   return (
     <div className="overflow-hidden rounded-3xl border border-cream-300 bg-white/70">
       <div className="flex flex-col gap-2 border-b border-cream-200 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="font-heading text-lg text-ink-900">🔁 The code, running live</h3>
+          <h3 className="font-heading text-lg text-ink-900">
+            🔁 The code, running live
+          </h3>
           <p className="text-sm text-ink-500">{loopBlurb}</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -59,17 +61,21 @@ export default function CodeTracer({ code, frame }) {
           {lines.map((line, i) => {
             const lineNo = i + 1;
             const isActive = lineNo === activeLine;
-            const tokens = tokenize(line || ' ');
+            const tokens = tokenize(line || " ");
             return (
               <motion.div
                 key={i}
                 animate={{
-                  backgroundColor: isActive ? 'rgba(238, 169, 46, 0.18)' : 'rgba(0,0,0,0)',
+                  backgroundColor: isActive
+                    ? "rgba(238, 169, 46, 0.18)"
+                    : "rgba(0,0,0,0)",
                 }}
                 transition={{ duration: 0.2 }}
-                className={`flex gap-4 rounded-md px-3 ${isActive ? 'border-l-4 border-honey-400' : 'border-l-4 border-transparent'}`}
+                className={`flex gap-4 rounded-md px-3 ${isActive ? "border-l-4 border-honey-400" : "border-l-4 border-transparent"}`}
               >
-                <span className="w-5 shrink-0 select-none text-right text-ink-300/60">{lineNo}</span>
+                <span className="w-5 shrink-0 select-none text-right text-ink-300/60">
+                  {lineNo}
+                </span>
                 <span className="whitespace-pre">
                   {tokens.map((t, ti) => (
                     <span key={ti} className={TOKEN_CLASSES[t.type]}>
@@ -78,7 +84,10 @@ export default function CodeTracer({ code, frame }) {
                   ))}
                 </span>
                 {isActive && (
-                  <motion.span layoutId="active-line-arrow" className="ml-auto shrink-0 text-honey-400">
+                  <motion.span
+                    layoutId="active-line-arrow"
+                    className="ml-auto shrink-0 text-honey-400"
+                  >
                     ◀
                   </motion.span>
                 )}

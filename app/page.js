@@ -47,8 +47,11 @@ export default function HomePage() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="max-w-xl text-lg text-ink-500"
         >
-          Right now we&apos;re going deep on <strong className="text-ink-700">one</strong> algorithm at a time instead of spreading thin — plain
-          language, real code you can trace line by line, and hands-on practice until it truly clicks. First up: Sliding Window.
+          Right now we&apos;re going deep on{" "}
+          <strong className="text-ink-700">one</strong> algorithm at a time
+          instead of spreading thin - plain language, real code you can trace
+          line by line, and hands-on practice until it truly clicks. First up:
+          Sliding Window.
         </motion.p>
         <motion.a
           initial={{ opacity: 0, y: 10 }}

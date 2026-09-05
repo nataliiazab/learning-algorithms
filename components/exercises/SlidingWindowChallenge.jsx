@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Mascot from '../Mascot';
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Mascot from "../Mascot";
 
 function shuffle(arr) {
   return [...arr].sort(() => Math.random() - 0.5);
@@ -37,19 +37,19 @@ function randomPuzzle() {
 
 // A hands-on drill for the one move that makes sliding window click: when the
 // window slides right, you drop the old left edge and pick up a new right
-// edge — no re-adding the whole window. This is deliberately *not* generic
+// edge - no re-adding the whole window. This is deliberately *not* generic
 // across algorithm types; if another algorithm ever wants its own practice
 // drill, register it in exercises/index.js the same way this one is.
 export default function SlidingWindowChallenge() {
   // Puzzles are randomized, so they're generated client-side only (in an
-  // effect) rather than during the initial render — otherwise the server's
+  // effect) rather than during the initial render - otherwise the server's
   // random puzzle and the client's random puzzle would differ and React
   // would throw a hydration mismatch. `puzzle` starts `null` and the very
   // first real render (server AND client) simply shows a loading state.
   const [puzzle, setPuzzle] = useState(null);
   const [leavingGuess, setLeavingGuess] = useState(null);
   const [enteringGuess, setEnteringGuess] = useState(null);
-  const [sumGuess, setSumGuess] = useState('');
+  const [sumGuess, setSumGuess] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
@@ -64,48 +64,74 @@ export default function SlidingWindowChallenge() {
     );
   }
 
-  const { array, k, oldSum, leaving, entering, newSum, leavingOptions, enteringOptions } = puzzle;
+  const {
+    array,
+    k,
+    oldSum,
+    leaving,
+    entering,
+    newSum,
+    leavingOptions,
+    enteringOptions,
+  } = puzzle;
 
   const leavingCorrect = leavingGuess === leaving;
   const enteringCorrect = enteringGuess === entering;
   const sumCorrect = Number(sumGuess) === newSum;
   const allCorrect = leavingCorrect && enteringCorrect && sumCorrect;
-  const canSubmit = leavingGuess !== null && enteringGuess !== null && sumGuess.trim() !== '';
+  const canSubmit =
+    leavingGuess !== null && enteringGuess !== null && sumGuess.trim() !== "";
 
   function newPuzzle() {
     setPuzzle(randomPuzzle());
     setLeavingGuess(null);
     setEnteringGuess(null);
-    setSumGuess('');
+    setSumGuess("");
     setSubmitted(false);
   }
 
   function optionClasses(isSelected, isCorrectOption) {
     if (!submitted) {
       return isSelected
-        ? 'border-honey-400 bg-honey-100 text-ink-900'
-        : 'border-cream-300 bg-white hover:border-honey-300 hover:bg-honey-50';
+        ? "border-honey-400 bg-honey-100 text-ink-900"
+        : "border-cream-300 bg-white hover:border-honey-300 hover:bg-honey-50";
     }
-    if (isCorrectOption) return 'border-sage-400 bg-sage-50 text-sage-800';
-    if (isSelected) return 'border-terracotta-300 bg-terracotta-50 text-terracotta-700';
-    return 'border-cream-200 bg-cream-50 text-ink-300';
+    if (isCorrectOption) return "border-sage-400 bg-sage-50 text-sage-800";
+    if (isSelected)
+      return "border-terracotta-300 bg-terracotta-50 text-terracotta-700";
+    return "border-cream-200 bg-cream-50 text-ink-300";
   }
 
   return (
     <div className="rounded-3xl border border-honey-200 bg-honey-50/40 p-6 sm:p-8">
       <div className="mb-5 flex items-center gap-3">
-        <Mascot size={44} mood={submitted ? (allCorrect ? 'excited' : 'oops') : 'thinking'} />
+        <Mascot
+          size={44}
+          mood={submitted ? (allCorrect ? "excited" : "oops") : "thinking"}
+        />
         <div>
-          <h3 className="font-heading text-lg text-ink-900">🎯 Practice the slide</h3>
-          <p className="text-sm text-ink-500">This is the one move sliding window is built on — let&apos;s drill it until it&apos;s automatic.</p>
+          <h3 className="font-heading text-lg text-ink-900">
+            🎯 Practice the slide
+          </h3>
+          <p className="text-sm text-ink-500">
+            This is the one move sliding window is built on - let&apos;s drill
+            it until it&apos;s automatic.
+          </p>
         </div>
       </div>
 
       <AnimatePresence mode="wait">
-        <motion.div key={array.join(',') + k} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
+        <motion.div
+          key={array.join(",") + k}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
           <p className="mb-3 text-sm text-ink-700">
-            Our window size is <strong>k = {k}</strong>. It&apos;s sitting at index 0–{k - 1}, with a sum of{' '}
-            <strong className="text-honey-600">{oldSum}</strong>. We&apos;re about to slide it one step to the right.
+            Our window size is <strong>k = {k}</strong>. It&apos;s sitting at
+            index 0–{k - 1}, with a sum of{" "}
+            <strong className="text-honey-600">{oldSum}</strong>. We&apos;re
+            about to slide it one step to the right.
           </p>
 
           <div className="mb-6 flex flex-wrap justify-center gap-2">
@@ -117,10 +143,10 @@ export default function SlidingWindowChallenge() {
                   key={index}
                   className={`flex h-12 w-12 items-center justify-center rounded-xl border-2 text-sm font-bold shadow-softer ${
                     inWindow
-                      ? 'border-honey-400 bg-honey-200 text-ink-900'
+                      ? "border-honey-400 bg-honey-200 text-ink-900"
                       : isNext
-                        ? 'border-dashed border-sage-400 bg-white text-ink-700'
-                        : 'border-cream-300 bg-white text-ink-400'
+                        ? "border-dashed border-sage-400 bg-white text-ink-700"
+                        : "border-cream-300 bg-white text-ink-400"
                   }`}
                 >
                   {value}
@@ -131,7 +157,9 @@ export default function SlidingWindowChallenge() {
 
           <div className="flex flex-col gap-5">
             <div>
-              <p className="mb-2 text-sm font-semibold text-ink-900">1. Which number will leave the window?</p>
+              <p className="mb-2 text-sm font-semibold text-ink-900">
+                1. Which number will leave the window?
+              </p>
               <div className="flex flex-wrap gap-2">
                 {leavingOptions.map((option) => (
                   <button
@@ -147,7 +175,9 @@ export default function SlidingWindowChallenge() {
             </div>
 
             <div>
-              <p className="mb-2 text-sm font-semibold text-ink-900">2. Which number will join the window?</p>
+              <p className="mb-2 text-sm font-semibold text-ink-900">
+                2. Which number will join the window?
+              </p>
               <div className="flex flex-wrap gap-2">
                 {enteringOptions.map((option) => (
                   <button
@@ -163,7 +193,9 @@ export default function SlidingWindowChallenge() {
             </div>
 
             <div>
-              <p className="mb-2 text-sm font-semibold text-ink-900">3. What will the new window sum be?</p>
+              <p className="mb-2 text-sm font-semibold text-ink-900">
+                3. What will the new window sum be?
+              </p>
               <input
                 type="number"
                 disabled={submitted}
@@ -171,7 +203,11 @@ export default function SlidingWindowChallenge() {
                 onChange={(e) => setSumGuess(e.target.value)}
                 placeholder="Type a number"
                 className={`w-40 rounded-full border-2 px-4 py-2 text-sm font-semibold outline-none ${
-                  submitted ? (sumCorrect ? 'border-sage-400 bg-sage-50 text-sage-800' : 'border-terracotta-300 bg-terracotta-50 text-terracotta-700') : 'border-cream-300 bg-white'
+                  submitted
+                    ? sumCorrect
+                      ? "border-sage-400 bg-sage-50 text-sage-800"
+                      : "border-terracotta-300 bg-terracotta-50 text-terracotta-700"
+                    : "border-cream-300 bg-white"
                 }`}
               />
             </div>
@@ -186,14 +222,22 @@ export default function SlidingWindowChallenge() {
               Check my answers
             </button>
           ) : (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 overflow-hidden">
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="mt-6 overflow-hidden"
+            >
               <div className="rounded-2xl bg-white p-4 text-sm leading-relaxed text-ink-700">
-                {allCorrect ? '🌟 ' : '💭 '}
-                The window drops <strong>{leaving}</strong> and picks up <strong>{entering}</strong>, so the new sum is{' '}
+                {allCorrect ? "🌟 " : "💭 "}
+                The window drops <strong>{leaving}</strong> and picks up{" "}
+                <strong>{entering}</strong>, so the new sum is{" "}
                 <strong>
                   {oldSum} − {leaving} + {entering} = {newSum}
                 </strong>
-                . {allCorrect ? "Nice work — that's exactly it!" : "Take a look at the arithmetic above, then give a fresh puzzle a try."}
+                .{" "}
+                {allCorrect
+                  ? "Nice work - that's exactly it!"
+                  : "Take a look at the arithmetic above, then give a fresh puzzle a try."}
               </div>
               <button
                 onClick={newPuzzle}
