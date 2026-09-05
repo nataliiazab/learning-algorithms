@@ -16,7 +16,11 @@ import LoopVariableGame from "./exercises/LoopVariableGame";
 import { getVisualizer } from "./visualizers";
 import { getPracticeExercises } from "./exercises";
 import { getAccent, badgeTone } from "@/lib/accentStyles";
-import { getAdjacentAlgorithms } from "@/lib/algorithms/registry";
+import {
+  getAdjacentAlgorithms,
+  localizeAlgorithm,
+} from "@/lib/algorithms/registry";
+import { useTranslation } from "@/lib/i18n/LocaleContext";
 
 const SPEED_MS = { 1: 1500, 2: 1050, 3: 700, 4: 450, 5: 250 };
 
@@ -37,7 +41,16 @@ function moodForFrame(frame, type) {
   return "happy";
 }
 
-export default function AlgorithmDetail({ config }) {
+export default function AlgorithmDetail({ config: rawConfig }) {
+  const { t, locale } = useTranslation();
+  // All human-language content (title, analogy, quiz, ...) gets swapped for
+  // its localized version here; anything not translated (code, bounds,
+  // generateSteps, ...) just passes through untouched.
+  const config = useMemo(
+    () => localizeAlgorithm(rawConfig, locale),
+    [rawConfig, locale],
+  );
+
   const [array, setArray] = useState(config.defaultInput);
   const [target, setTarget] = useState(
     config.defaultTarget ?? config.defaultInput[0],
@@ -96,7 +109,7 @@ export default function AlgorithmDetail({ config }) {
         href="/"
         className="mb-6 inline-flex items-center gap-1 text-sm font-medium text-ink-500 transition hover:text-ink-900"
       >
-        ← Back to all lessons
+        {t("detail.back")}
       </Link>
 
       {/* Header */}
@@ -115,8 +128,8 @@ export default function AlgorithmDetail({ config }) {
       </div>
       <div className="mb-10 flex flex-wrap gap-2">
         <Badge tone={badgeTone(config.accent)}>{config.category}</Badge>
-        <Badge tone="sand">{config.difficulty}</Badge>
-        <Badge tone="sand">⏱ ~{config.minutes} min</Badge>
+        <Badge tone="sand">{t(`difficulty.${config.difficulty}`)}</Badge>
+        <Badge tone="sand">{t("card.minutes", { n: config.minutes })}</Badge>
       </div>
 
       {/* Analogy */}
@@ -124,13 +137,13 @@ export default function AlgorithmDetail({ config }) {
         <Mascot mood="happy" size={64} className="shrink-0" />
         <div>
           <h2 className="font-heading text-xl text-ink-900">
-            What is it, really?
+            {t("detail.whatIsIt")}
           </h2>
           <p className="mt-2 leading-relaxed text-ink-700">{config.analogy}</p>
         </div>
       </section>
 
-      {/* Understand the code — meet the loops/variables, then a quick game to drill them, BEFORE watching the live trace below */}
+      {/* Understand the code - meet the loops/variables, then a quick game to drill them, BEFORE watching the live trace below */}
       {config.codeConcepts && (
         <section className="mb-10">
           <CodeConcepts concepts={config.codeConcepts} />
@@ -145,7 +158,9 @@ export default function AlgorithmDetail({ config }) {
 
       {/* Try it yourself + visualizer */}
       <section className="mb-10 flex flex-col gap-4">
-        <h2 className="font-heading text-xl text-ink-900">Watch it happen</h2>
+        <h2 className="font-heading text-xl text-ink-900">
+          {t("detail.watchItHappen")}
+        </h2>
         <TryItYourself
           config={config}
           array={array}
@@ -198,7 +213,7 @@ export default function AlgorithmDetail({ config }) {
       {/* How it works */}
       <section className="mb-10">
         <h2 className="mb-4 font-heading text-xl text-ink-900">
-          How it works, step by step
+          {t("detail.howItWorks")}
         </h2>
         <ol className="flex flex-col gap-3">
           {config.howItWorks.map((step, i) => (
@@ -237,7 +252,7 @@ export default function AlgorithmDetail({ config }) {
       {/* Extra hands-on practice, for the ideas that need a bit more repetition */}
       {practiceExercises.map((Exercise, i) => (
         <section key={i} className="mb-10">
-          <Exercise />
+          <Exercise config={config} />
         </section>
       ))}
 
@@ -257,18 +272,18 @@ export default function AlgorithmDetail({ config }) {
             href={`/algorithms/${prev.slug}`}
             className="flex-1 rounded-2xl border border-cream-300 bg-white/70 p-4 text-sm transition hover:bg-cream-100"
           >
-            <span className="text-ink-500">← Previous</span>
+            <span className="text-ink-500">{t("detail.previous")}</span>
             <p className="font-heading text-ink-900">
-              {prev.emoji} {prev.title}
+              {prev.emoji} {localizeAlgorithm(prev, locale).title}
             </p>
           </Link>
           <Link
             href={`/algorithms/${next.slug}`}
             className="flex-1 rounded-2xl border border-cream-300 bg-white/70 p-4 text-right text-sm transition hover:bg-cream-100"
           >
-            <span className="text-ink-500">Next →</span>
+            <span className="text-ink-500">{t("detail.next")}</span>
             <p className="font-heading text-ink-900">
-              {next.emoji} {next.title}
+              {next.emoji} {localizeAlgorithm(next, locale).title}
             </p>
           </Link>
         </nav>

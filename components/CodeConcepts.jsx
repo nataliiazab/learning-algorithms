@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Mascot from './Mascot';
+import { useTranslation } from '@/lib/i18n/LocaleContext';
 
 function FlipCard({ emoji, title, subtitle, code, explanation }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   return (
     <button
@@ -32,7 +34,7 @@ function FlipCard({ emoji, title, subtitle, code, explanation }) {
           </motion.p>
         )}
       </AnimatePresence>
-      {!open && <p className="text-xs text-ink-300">Tap to find out what I do →</p>}
+      {!open && <p className="text-xs text-ink-300">{t('concepts.tapToReveal')}</p>}
     </button>
   );
 }
@@ -41,20 +43,21 @@ function FlipCard({ emoji, title, subtitle, code, explanation }) {
 // introductions to the two loops and the handful of variables involved,
 // so the reader knows who's who before watching them move.
 export default function CodeConcepts({ concepts }) {
+  const { t } = useTranslation();
   if (!concepts) return null;
   return (
     <div className="rounded-3xl border border-honey-200 bg-honey-50/40 p-6 sm:p-8">
       <div className="mb-5 flex items-start gap-3">
         <Mascot size={48} mood="happy" />
         <div>
-          <h3 className="font-heading text-lg text-ink-900">🧠 Loops &amp; variables, decoded</h3>
+          <h3 className="font-heading text-lg text-ink-900">{t('concepts.title')}</h3>
           <p className="mt-1 text-sm leading-relaxed text-ink-700">{concepts.intro}</p>
         </div>
       </div>
 
       <div className="mb-3 flex items-center gap-2">
         <span className="text-lg">🔁</span>
-        <h4 className="font-heading text-base text-ink-900">The two loops</h4>
+        <h4 className="font-heading text-base text-ink-900">{t('concepts.loopsHeading')}</h4>
       </div>
       <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
         {concepts.loops.map((loop) => (
@@ -64,7 +67,7 @@ export default function CodeConcepts({ concepts }) {
 
       <div className="mb-3 flex items-center gap-2">
         <span className="text-lg">📦</span>
-        <h4 className="font-heading text-base text-ink-900">The cast of variables</h4>
+        <h4 className="font-heading text-base text-ink-900">{t('concepts.variablesHeading')}</h4>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {concepts.variables.map((v) => (

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from '@/lib/i18n/LocaleContext';
 
 function randomArray({ minSize, maxSize, minValue, maxValue }) {
   const size = Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize;
@@ -17,6 +18,7 @@ function randomSortedUniqueArray({ minSize, maxSize, minValue, maxValue }) {
 }
 
 export default function TryItYourself({ config, array, setArray, target, setTarget, windowSize, setWindowSize }) {
+  const { t } = useTranslation();
   const [customText, setCustomText] = useState(array.join(', '));
   const [error, setError] = useState('');
 
@@ -28,11 +30,11 @@ export default function TryItYourself({ config, array, setArray, target, setTarg
       .map(Number);
 
     if (parts.some((n) => Number.isNaN(n))) {
-      setError('Hmm, that doesn’t look like a list of numbers. Try something like 4, 8, 2, 9 🌿');
+      setError(t('try.errorNotNumbers'));
       return;
     }
     if (parts.length < config.minSize || parts.length > config.maxSize) {
-      setError(`Please give me between ${config.minSize} and ${config.maxSize} numbers.`);
+      setError(t('try.errorRange', { min: config.minSize, max: config.maxSize }));
       return;
     }
     setError('');
@@ -55,16 +57,16 @@ export default function TryItYourself({ config, array, setArray, target, setTarg
 
     return (
       <div className="flex flex-col gap-3 rounded-3xl border border-cream-300 bg-cream-50/70 p-5">
-        <p className="text-sm font-semibold text-ink-900">🧪 Try it yourself</p>
+        <p className="text-sm font-semibold text-ink-900">{t('try.title')}</p>
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={shuffle}
             className="rounded-full bg-white px-4 py-2 text-sm font-medium text-ink-700 shadow-softer transition hover:bg-cream-100"
           >
-            🔀 New sorted list
+            {t('try.newSortedList')}
           </button>
           <label className="flex items-center gap-2 text-sm text-ink-700">
-            Search for:
+            {t('try.searchFor')}
             <select
               value={target}
               onChange={(e) => setTarget(Number(e.target.value))}
@@ -73,7 +75,7 @@ export default function TryItYourself({ config, array, setArray, target, setTarg
               {(array.includes(target) ? array : [...array, target].sort((a, b) => a - b)).map((v) => (
                 <option key={v} value={v}>
                   {v}
-                  {!array.includes(v) ? ' (not in list)' : ''}
+                  {!array.includes(v) ? t('try.notInList') : ''}
                 </option>
               ))}
             </select>
@@ -82,7 +84,7 @@ export default function TryItYourself({ config, array, setArray, target, setTarg
             onClick={tryTricky}
             className="rounded-full bg-white px-4 py-2 text-sm font-medium text-ink-700 shadow-softer transition hover:bg-cream-100"
           >
-            🎯 Try a number that&apos;s not there
+            {t('try.tryTricky')}
           </button>
         </div>
       </div>
@@ -100,32 +102,32 @@ export default function TryItYourself({ config, array, setArray, target, setTarg
 
   return (
     <div className="flex flex-col gap-3 rounded-3xl border border-cream-300 bg-cream-50/70 p-5">
-      <p className="text-sm font-semibold text-ink-900">🧪 Try it yourself</p>
+      <p className="text-sm font-semibold text-ink-900">{t('try.title')}</p>
       <div className="flex flex-wrap items-center gap-3">
         <button
           onClick={shuffleSort}
           className="rounded-full bg-white px-4 py-2 text-sm font-medium text-ink-700 shadow-softer transition hover:bg-cream-100"
         >
-          🔀 Shuffle numbers
+          {t('try.shuffleNumbers')}
         </button>
         <div className="flex items-center gap-2">
           <input
             value={customText}
             onChange={(e) => setCustomText(e.target.value)}
-            placeholder="e.g. 5, 2, 8, 1"
+            placeholder={t('try.placeholder')}
             className="w-40 rounded-full border border-cream-300 bg-white px-3 py-1.5 text-sm text-ink-900 sm:w-56"
           />
           <button
             onClick={applyCustom}
             className="rounded-full bg-sage-500 px-4 py-2 text-sm font-medium text-white shadow-softer transition hover:bg-sage-600"
           >
-            Use these
+            {t('try.useThese')}
           </button>
         </div>
       </div>
       {config.type === 'window' && (
         <label className="flex items-center gap-3 text-sm text-ink-700">
-          <span className="font-medium">🪟 Window size (k): {windowSize}</span>
+          <span className="font-medium">{t('try.windowSize', { k: windowSize })}</span>
           <input
             type="range"
             min={config.minWindow ?? 2}

@@ -5,8 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import Mascot from "./Mascot";
 import Confetti from "./Confetti";
 import { markCompleted } from "@/lib/progress";
+import { useTranslation } from "@/lib/i18n/LocaleContext";
 
 export default function QuizSection({ slug, quiz, accent }) {
+  const { t } = useTranslation();
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState(null);
   const [score, setScore] = useState(0);
@@ -47,18 +49,16 @@ export default function QuizSection({ slug, quiz, accent }) {
         <Confetti show={great} />
         <Mascot mood={great ? "excited" : "happy"} size={72} />
         <h3 className="font-heading text-2xl text-ink-900">
-          You scored {score} / {quiz.length}!
+          {t("quiz.scored", { score, total: quiz.length })}
         </h3>
         <p className="max-w-sm text-sm text-ink-500">
-          {great
-            ? "Perfect score! You've truly grown this lesson. 🌟"
-            : "Nice work - understanding grows with practice. Feel free to try again anytime."}
+          {great ? t("quiz.perfect") : t("quiz.notPerfect")}
         </p>
         <button
           onClick={handleRetry}
           className="mt-2 rounded-full bg-white px-5 py-2 text-sm font-semibold text-ink-700 shadow-softer transition hover:bg-cream-100"
         >
-          🔁 Try the quiz again
+          {t("quiz.tryAgain")}
         </button>
       </div>
     );
@@ -74,10 +74,10 @@ export default function QuizSection({ slug, quiz, accent }) {
           />
           <div>
             <h3 className="font-heading text-lg text-ink-900">
-              Check your understanding
+              {t("quiz.title")}
             </h3>
             <p className="text-xs text-ink-500">
-              Question {index + 1} of {quiz.length}
+              {t("quiz.questionOf", { current: index + 1, total: quiz.length })}
             </p>
           </div>
         </div>
@@ -148,7 +148,7 @@ export default function QuizSection({ slug, quiz, accent }) {
                   onClick={handleNext}
                   className="mt-4 w-full rounded-full bg-ink-900 px-5 py-2.5 text-sm font-semibold text-cream-50 transition hover:bg-ink-700 sm:w-auto"
                 >
-                  {isLast ? "See my results" : "Next question"} →
+                  {isLast ? t("quiz.seeResults") : t("quiz.next")} →
                 </button>
               </motion.div>
             )}

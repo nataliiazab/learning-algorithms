@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { tokenize, TOKEN_CLASSES } from "@/lib/highlight";
+import { useTranslation } from "@/lib/i18n/LocaleContext";
 
 export default function CodeBlock({ code }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const tokens = tokenize(code);
@@ -27,15 +29,14 @@ export default function CodeBlock({ code }) {
       >
         <div>
           <h3 className="font-heading text-lg text-ink-900">
-            🧑‍💻 See it in real JavaScript
+            {t("codeBlock.title")}
           </h3>
           <p className="text-sm text-ink-500">
-            The exact logic behind the animation above, written as a runnable
-            function.
+            {t("codeBlock.subtitle")}
           </p>
         </div>
         <span className="shrink-0 rounded-full bg-cream-100 px-4 py-2 text-sm font-semibold text-ink-700">
-          {open ? "Hide code" : "Show me the code"}
+          {open ? t("codeBlock.hide") : t("codeBlock.show")}
         </span>
       </button>
       <AnimatePresence initial={false}>
@@ -52,7 +53,7 @@ export default function CodeBlock({ code }) {
                 onClick={handleCopy}
                 className="absolute right-4 top-4 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-cream-100 transition hover:bg-white/20"
               >
-                {copied ? "✅ Copied!" : "📋 Copy"}
+                {copied ? t("codeBlock.copied") : t("codeBlock.copy")}
               </button>
               <pre className="overflow-x-auto pr-16 text-sm leading-relaxed">
                 <code className="font-mono">

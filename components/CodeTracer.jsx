@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { tokenize, TOKEN_CLASSES } from "@/lib/highlight";
+import { useTranslation } from "@/lib/i18n/LocaleContext";
 
 function VarChip({ name, value }) {
   return (
@@ -29,6 +30,7 @@ function VarChip({ name, value }) {
 // animation and playback controls elsewhere on the page (they all share
 // the same `frame`, produced by the algorithm's generateSteps()).
 export default function CodeTracer({ code, frame }) {
+  const { t } = useTranslation();
   if (!frame) return null;
   const lines = code.split("\n");
   const activeLine = frame.codeLine;
@@ -36,17 +38,17 @@ export default function CodeTracer({ code, frame }) {
 
   const loopBlurb =
     frame.loop === "build"
-      ? "Loop 1 (building): runs k times, adding one number to windowSum each round - this builds our very first window."
+      ? t("tracer.loopBuild")
       : frame.loop === "slide"
-        ? "Loop 2 (sliding): runs once per remaining position - each round drops the old left number, adds the new right number, and checks if this is our best sum yet."
-        : "Not inside a loop right now.";
+        ? t("tracer.loopSlide")
+        : t("tracer.loopNone");
 
   return (
     <div className="overflow-hidden rounded-3xl border border-cream-300 bg-white/70">
       <div className="flex flex-col gap-2 border-b border-cream-200 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="font-heading text-lg text-ink-900">
-            🔁 The code, running live
+            {t("tracer.title")}
           </h3>
           <p className="text-sm text-ink-500">{loopBlurb}</p>
         </div>

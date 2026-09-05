@@ -6,8 +6,12 @@ import { useEffect, useState } from 'react';
 import Badge from './Badge';
 import { getAccent, badgeTone } from '@/lib/accentStyles';
 import { isCompleted } from '@/lib/progress';
+import { localizeAlgorithm } from '@/lib/algorithms/registry';
+import { useTranslation } from '@/lib/i18n/LocaleContext';
 
-export default function AlgorithmCard({ algorithm }) {
+export default function AlgorithmCard({ algorithm: rawAlgorithm }) {
+  const { t, locale } = useTranslation();
+  const algorithm = localizeAlgorithm(rawAlgorithm, locale);
   const accent = getAccent(algorithm.accent);
   const [done, setDone] = useState(false);
 
@@ -35,11 +39,11 @@ export default function AlgorithmCard({ algorithm }) {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone={badgeTone(algorithm.accent)}>{algorithm.category}</Badge>
-          <Badge tone="sand">{algorithm.difficulty}</Badge>
-          <Badge tone="sand">⏱ ~{algorithm.minutes} min</Badge>
+          <Badge tone="sand">{t(`difficulty.${algorithm.difficulty}`)}</Badge>
+          <Badge tone="sand">{t('card.minutes', { n: algorithm.minutes })}</Badge>
         </div>
         <span className={`mt-1 inline-flex items-center gap-1 text-sm font-semibold ${accent.text}`}>
-          Start learning
+          {t('card.startLearning')}
           <span className="transition group-hover:translate-x-1">→</span>
         </span>
       </Link>

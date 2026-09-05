@@ -3,9 +3,14 @@
 import { motion } from "framer-motion";
 import Mascot from "@/components/Mascot";
 import AlgorithmCard from "@/components/AlgorithmCard";
-import { algorithms, categories } from "@/lib/algorithms/registry";
+import { algorithms, localizeAlgorithm } from "@/lib/algorithms/registry";
+import { useTranslation } from "@/lib/i18n/LocaleContext";
 
 export default function HomePage() {
+  const { t, locale } = useTranslation();
+  const localized = algorithms.map((a) => localizeAlgorithm(a, locale));
+  const categories = Array.from(new Set(localized.map((a) => a.category)));
+
   return (
     <div className="mx-auto max-w-6xl px-5 pb-24 sm:px-8">
       {/* Hero */}
@@ -39,7 +44,7 @@ export default function HomePage() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="max-w-2xl font-heading text-4xl leading-tight text-ink-900 sm:text-5xl"
         >
-          Learn algorithms without the intimidating jargon 🌱
+          {t("home.title")}
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 10 }}
@@ -47,11 +52,7 @@ export default function HomePage() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="max-w-xl text-lg text-ink-500"
         >
-          Right now we&apos;re going deep on{" "}
-          <strong className="text-ink-700">one</strong> algorithm at a time
-          instead of spreading thin - plain language, real code you can trace
-          line by line, and hands-on practice until it truly clicks. First up:
-          Sliding Window.
+          {t("home.subtitle", { strongOne: t("home.strongOne") })}
         </motion.p>
         <motion.a
           initial={{ opacity: 0, y: 10 }}
@@ -60,7 +61,7 @@ export default function HomePage() {
           href="#lessons"
           className="rounded-full bg-sage-500 px-6 py-3 text-base font-semibold text-white shadow-soft transition hover:bg-sage-600"
         >
-          Start learning 🌿
+          {t("home.cta")}
         </motion.a>
       </section>
 
@@ -72,7 +73,7 @@ export default function HomePage() {
               {category}
             </h2>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {algorithms
+              {localized
                 .filter((a) => a.category === category)
                 .map((algorithm) => (
                   <AlgorithmCard key={algorithm.slug} algorithm={algorithm} />
@@ -81,9 +82,7 @@ export default function HomePage() {
           </div>
         ))}
 
-        <p className="mb-14 text-center text-sm text-ink-300">
-          More algorithms will grow here once this one is thriving. 🌱
-        </p>
+        <p className="mb-14 text-center text-sm text-ink-300">{t("home.moreComing")}</p>
       </section>
     </div>
   );

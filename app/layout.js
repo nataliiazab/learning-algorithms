@@ -2,6 +2,7 @@ import { Baloo_2, Nunito } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { LocaleProvider } from "@/lib/i18n/LocaleContext";
 
 const baloo = Baloo_2({
   subsets: ["latin"],
@@ -24,9 +25,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${baloo.variable} ${nunito.variable}`}>
       <body className="min-h-screen bg-cream-50 font-body text-ink-900 antialiased">
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <LocaleProvider>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+        </LocaleProvider>
       </body>
     </html>
   );

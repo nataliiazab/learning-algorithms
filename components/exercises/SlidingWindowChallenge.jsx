@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Mascot from "../Mascot";
+import { useTranslation } from "@/lib/i18n/LocaleContext";
 
 function shuffle(arr) {
   return [...arr].sort(() => Math.random() - 0.5);
@@ -41,6 +42,7 @@ function randomPuzzle() {
 // across algorithm types; if another algorithm ever wants its own practice
 // drill, register it in exercises/index.js the same way this one is.
 export default function SlidingWindowChallenge() {
+  const { t } = useTranslation();
   // Puzzles are randomized, so they're generated client-side only (in an
   // effect) rather than during the initial render - otherwise the server's
   // random puzzle and the client's random puzzle would differ and React
@@ -59,7 +61,7 @@ export default function SlidingWindowChallenge() {
   if (!puzzle) {
     return (
       <div className="rounded-3xl border border-honey-200 bg-honey-50/40 p-8 text-center text-sm text-ink-500">
-        🌱 Growing a puzzle for you...
+        {t("challenge.loading")}
       </div>
     );
   }
@@ -110,13 +112,8 @@ export default function SlidingWindowChallenge() {
           mood={submitted ? (allCorrect ? "excited" : "oops") : "thinking"}
         />
         <div>
-          <h3 className="font-heading text-lg text-ink-900">
-            🎯 Practice the slide
-          </h3>
-          <p className="text-sm text-ink-500">
-            This is the one move sliding window is built on - let&apos;s drill
-            it until it&apos;s automatic.
-          </p>
+          <h3 className="font-heading text-lg text-ink-900">{t("challenge.title")}</h3>
+          <p className="text-sm text-ink-500">{t("challenge.subtitle")}</p>
         </div>
       </div>
 
@@ -127,12 +124,7 @@ export default function SlidingWindowChallenge() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <p className="mb-3 text-sm text-ink-700">
-            Our window size is <strong>k = {k}</strong>. It&apos;s sitting at
-            index 0–{k - 1}, with a sum of{" "}
-            <strong className="text-honey-600">{oldSum}</strong>. We&apos;re
-            about to slide it one step to the right.
-          </p>
+          <p className="mb-3 text-sm text-ink-700">{t("challenge.intro", { k, lastIndex: k - 1, oldSum })}</p>
 
           <div className="mb-6 flex flex-wrap justify-center gap-2">
             {array.map((value, index) => {
@@ -157,9 +149,7 @@ export default function SlidingWindowChallenge() {
 
           <div className="flex flex-col gap-5">
             <div>
-              <p className="mb-2 text-sm font-semibold text-ink-900">
-                1. Which number will leave the window?
-              </p>
+              <p className="mb-2 text-sm font-semibold text-ink-900">{t("challenge.q1")}</p>
               <div className="flex flex-wrap gap-2">
                 {leavingOptions.map((option) => (
                   <button
@@ -175,9 +165,7 @@ export default function SlidingWindowChallenge() {
             </div>
 
             <div>
-              <p className="mb-2 text-sm font-semibold text-ink-900">
-                2. Which number will join the window?
-              </p>
+              <p className="mb-2 text-sm font-semibold text-ink-900">{t("challenge.q2")}</p>
               <div className="flex flex-wrap gap-2">
                 {enteringOptions.map((option) => (
                   <button
@@ -193,15 +181,13 @@ export default function SlidingWindowChallenge() {
             </div>
 
             <div>
-              <p className="mb-2 text-sm font-semibold text-ink-900">
-                3. What will the new window sum be?
-              </p>
+              <p className="mb-2 text-sm font-semibold text-ink-900">{t("challenge.q3")}</p>
               <input
                 type="number"
                 disabled={submitted}
                 value={sumGuess}
                 onChange={(e) => setSumGuess(e.target.value)}
-                placeholder="Type a number"
+                placeholder={t("challenge.typeNumber")}
                 className={`w-40 rounded-full border-2 px-4 py-2 text-sm font-semibold outline-none ${
                   submitted
                     ? sumCorrect
@@ -219,7 +205,7 @@ export default function SlidingWindowChallenge() {
               disabled={!canSubmit}
               className="mt-6 rounded-full bg-honey-400 px-5 py-2.5 text-sm font-semibold text-ink-900 shadow-softer transition hover:bg-honey-500 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              Check my answers
+              {t("challenge.check")}
             </button>
           ) : (
             <motion.div
@@ -229,21 +215,17 @@ export default function SlidingWindowChallenge() {
             >
               <div className="rounded-2xl bg-white p-4 text-sm leading-relaxed text-ink-700">
                 {allCorrect ? "🌟 " : "💭 "}
-                The window drops <strong>{leaving}</strong> and picks up{" "}
-                <strong>{entering}</strong>, so the new sum is{" "}
+                {t("challenge.explanationLead", { leaving, entering })}{" "}
                 <strong>
                   {oldSum} − {leaving} + {entering} = {newSum}
                 </strong>
-                .{" "}
-                {allCorrect
-                  ? "Nice work - that's exactly it!"
-                  : "Take a look at the arithmetic above, then give a fresh puzzle a try."}
+                . {allCorrect ? t("challenge.explanationGood") : t("challenge.explanationBad")}
               </div>
               <button
                 onClick={newPuzzle}
                 className="mt-4 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-ink-700 shadow-softer transition hover:bg-cream-100"
               >
-                🔁 Try another puzzle
+                {t("challenge.tryAnother")}
               </button>
             </motion.div>
           )}
