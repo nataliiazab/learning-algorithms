@@ -12,6 +12,7 @@ import QuizSection from "./QuizSection";
 import CodeBlock from "./CodeBlock";
 import CodeTracer from "./CodeTracer";
 import CodeConcepts from "./CodeConcepts";
+import CodeWalkthrough from "./CodeWalkthrough";
 import LoopVariableGame from "./exercises/LoopVariableGame";
 import { getVisualizer } from "./visualizers";
 import { getPracticeExercises } from "./exercises";
@@ -143,7 +144,15 @@ export default function AlgorithmDetail({ config: rawConfig }) {
         </div>
       </section>
 
-      {/* Understand the code - meet the loops/variables, then a quick game to drill them, BEFORE watching the live trace below */}
+      {/* The main teaching moment: a worked, line-by-line walkthrough with
+          real numbers, before any lighter recap cards or games */}
+      {config.walkthrough && (
+        <section className="mb-10">
+          <CodeWalkthrough walkthrough={config.walkthrough} />
+        </section>
+      )}
+
+      {/* Understand the code - meet the loops/variables (a lighter recap), then a quick game to drill them, BEFORE watching the live trace below */}
       {config.codeConcepts && (
         <section className="mb-10">
           <CodeConcepts concepts={config.codeConcepts} />

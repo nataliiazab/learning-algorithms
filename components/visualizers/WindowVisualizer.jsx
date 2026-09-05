@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "@/lib/i18n/LocaleContext";
 
 // Fixed cell sizing so we can animate a literal highlight box sliding
 // across the row (rather than just recoloring cells in place).
@@ -38,6 +39,7 @@ function StatCard({ label, value, tone, icon }) {
 
 // Renders one "frame" produced by sliding window's generateSteps().
 export default function WindowVisualizer({ frame }) {
+  const { t } = useTranslation();
   if (!frame) return null;
   const {
     array,
@@ -86,12 +88,12 @@ export default function WindowVisualizer({ frame }) {
     <div className="flex flex-col gap-5 rounded-3xl border border-cream-300 bg-white/70 p-6">
       <div className="flex flex-col gap-3 sm:flex-row">
         <StatCard
-          label="Window sum"
+          label={t("window.sum")}
           value={currentSum}
           tone="honey"
           icon="🪟"
         />
-        <StatCard label="Best sum" value={bestSum} tone="sage" icon="🏆" />
+        <StatCard label={t("window.best")} value={bestSum} tone="sage" icon="🏆" />
       </div>
 
       <div className="overflow-x-auto pb-2">
@@ -160,8 +162,8 @@ export default function WindowVisualizer({ frame }) {
 
       <p className="text-center text-xs text-ink-500">
         {finished
-          ? `🏆 Best window: index ${bestStart}–${bestEnd}`
-          : `🪟 Current window: index ${windowStart}–${windowEnd}`}
+          ? t("window.bestWindow", { start: bestStart, end: bestEnd })
+          : t("window.current", { start: windowStart, end: windowEnd })}
       </p>
     </div>
   );

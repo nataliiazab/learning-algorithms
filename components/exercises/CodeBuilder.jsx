@@ -6,13 +6,7 @@ import Mascot from "../Mascot";
 import Confetti from "../Confetti";
 import InlineText from "../InlineText";
 import { tokenize, TOKEN_CLASSES, TOKEN_CLASSES_LIGHT } from "@/lib/highlight";
-import { CODE } from "@/lib/algorithms/slidingWindow";
 import { useTranslation } from "@/lib/i18n/LocaleContext";
-
-const LINES = CODE.split("\n");
-function findLine(snippet) {
-  return LINES.findIndex((l) => l.includes(snippet));
-}
 
 function CodeLine({ text, dim, active, light }) {
   const tokens = tokenize(text);
@@ -39,6 +33,12 @@ function CodeLine({ text, dim, active, light }) {
 export default function CodeBuilder({ config }) {
   const { t } = useTranslation();
   const blanks = config.codeBuilder.blanks;
+  // config.code is already the locale-appropriate version (its comments
+  // translate; the runnable code itself never does), so the surrounding
+  // "given" lines shown here automatically match whatever language the
+  // rest of the page is in.
+  const LINES = config.code.split("\n");
+  const findLine = (snippet) => LINES.findIndex((l) => l.includes(snippet));
   const [step, setStep] = useState(0);
   const [solved, setSolved] = useState(false);
   const [wrongPick, setWrongPick] = useState(null);
