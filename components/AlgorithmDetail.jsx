@@ -11,6 +11,8 @@ import ComplexityChart from "./ComplexityChart";
 import QuizSection from "./QuizSection";
 import CodeBlock from "./CodeBlock";
 import CodeTracer from "./CodeTracer";
+import CodeConcepts from "./CodeConcepts";
+import LoopVariableGame from "./exercises/LoopVariableGame";
 import { getVisualizer } from "./visualizers";
 import { getPracticeExercises } from "./exercises";
 import { getAccent, badgeTone } from "@/lib/accentStyles";
@@ -127,6 +129,19 @@ export default function AlgorithmDetail({ config }) {
           <p className="mt-2 leading-relaxed text-ink-700">{config.analogy}</p>
         </div>
       </section>
+
+      {/* Understand the code — meet the loops/variables, then a quick game to drill them, BEFORE watching the live trace below */}
+      {config.codeConcepts && (
+        <section className="mb-10">
+          <CodeConcepts concepts={config.codeConcepts} />
+        </section>
+      )}
+
+      {config.conceptGame && (
+        <section className="mb-10">
+          <LoopVariableGame items={config.conceptGame} />
+        </section>
+      )}
 
       {/* Try it yourself + visualizer */}
       <section className="mb-10 flex flex-col gap-4">
