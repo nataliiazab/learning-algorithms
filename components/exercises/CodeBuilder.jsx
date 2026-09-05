@@ -24,27 +24,34 @@ function CodeLine({ text, dim, active, light }) {
 
 // The "apply it yourself" drill: rebuild the real function one meaningful
 // line at a time, tutor-style - a short prompt, a few candidate lines to
-// choose from, instant feedback, then on to the next blank. By the end the
-// whole function is sitting there, fully assembled, written by the learner.
-// `blanks` (from the algorithm's `codeBuilder.blanks`, already localized)
-// carries everything except which line of CODE each one belongs to -
-// `matchSnippet` is real code, so it's the same in every locale and used
-// to look that line up here.
-export default function CodeBuilder({ config }) {
+// choose from, instant feedback, then on to the next blank.
+//
+// `range` (default: the whole thing) lets a lesson split the blanks across
+// several stages - e.g. [0, 1) in one stage, [1, 2) in the next, [2, 5) in
+// a third - while still showing the *whole* function each time: blanks
+// before the range are shown already filled in (from earlier stages),
+// blanks after it are shown as untouched placeholders (coming up later).
+export default function CodeBuilder({ config, range }) {
   const { t } = useTranslation();
   const blanks = config.codeBuilder.blanks;
+  const [rangeStart, rangeEnd] = range ?? [0, blanks.length];
+  const isLastRange = rangeEnd >= blanks.length;
   // config.code is already the locale-appropriate version (its comments
   // translate; the runnable code itself never does), so the surrounding
   // "given" lines shown here automatically match whatever language the
   // rest of the page is in.
   const LINES = config.code.split("\n");
   const findLine = (snippet) => LINES.findIndex((l) => l.includes(snippet));
-  const [step, setStep] = useState(0);
+  const lineIndexOf = (b) => findLine(b.matchSnippet);
+
+  const [localStep, setLocalStep] = useState(0); // index within THIS range
   const [solved, setSolved] = useState(false);
   const [wrongPick, setWrongPick] = useState(null);
-  const finished = step >= blanks.length;
-  const blank = !finished ? blanks[step] : null;
-  const lineIndexOf = (b) => findLine(b.matchSnippet);
+
+  const rangeLength = rangeEnd - rangeStart;
+  const globalStep = rangeStart + localStep;
+  const finished = localStep >= rangeLength;
+  const blank = !finished ? blanks[globalStep] : null;
 
   function pick(choice) {
     if (solved) return;
@@ -57,14 +64,14 @@ export default function CodeBuilder({ config }) {
   }
 
   function next() {
-    setStep((s) => s + 1);
+    setLocalStep((s) => s + 1);
     setSolved(false);
     setWrongPick(null);
   }
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-honey-200 bg-honey-50/40 p-6 sm:p-8">
-      <Confetti show={finished} />
+      <Confetti show={finished && isLastRange} />
       <div className="mb-5 flex items-center gap-3">
         <Mascot
           size={44}
@@ -73,7 +80,11 @@ export default function CodeBuilder({ config }) {
         <div>
           <h3 className="font-heading text-lg text-ink-900">{t("builder.title")}</h3>
           <p className="text-sm text-ink-500">
-            {finished ? t("builder.doneSubtitle") : t("builder.progressSubtitle", { current: step + 1, total: blanks.length })}
+            {finished
+              ? isLastRange
+                ? t("builder.doneSubtitle")
+                : t("builder.partialDone")
+              : t("builder.progressSubtitle", { current: globalStep + 1, total: blanks.length })}
           </p>
         </div>
       </div>
@@ -90,8 +101,25 @@ export default function CodeBuilder({ config }) {
                 </div>
               );
             }
-            const isPast = blankAt < step || (blankAt === step && solved);
-            const isCurrent = blankAt === step && !solved;
+            // Blanks from earlier stages are always shown solved; blanks
+            // from later stages are always shown as untouched placeholders.
+            if (blankAt < rangeStart) {
+              return (
+                <div key={i} className="rounded bg-sage-500/10">
+                  <CodeLine text={blanks[blankAt].correct} active />
+                </div>
+              );
+            }
+            if (blankAt >= rangeEnd) {
+              return (
+                <div key={i}>
+                  <span className="text-ink-300/40">  ???</span>
+                </div>
+              );
+            }
+            const localAt = blankAt - rangeStart;
+            const isPast = localAt < localStep || (localAt === localStep && solved);
+            const isCurrent = localAt === localStep && !solved;
             if (isPast) {
               return (
                 <motion.div
@@ -123,7 +151,7 @@ export default function CodeBuilder({ config }) {
       {!finished ? (
         <AnimatePresence mode="wait">
           <motion.div
-            key={step}
+            key={globalStep}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -173,20 +201,28 @@ export default function CodeBuilder({ config }) {
                     onClick={next}
                     className="mt-3 rounded-full bg-honey-400 px-5 py-2.5 text-sm font-semibold text-ink-900 shadow-softer transition hover:bg-honey-500"
                   >
-                    {step === blanks.length - 1 ? t("builder.seeFinished") : t("builder.nextLine")}
+                    {globalStep === blanks.length - 1 ? t("builder.seeFinished") : t("builder.nextLine")}
                   </button>
                 </motion.div>
               )}
             </AnimatePresence>
           </motion.div>
         </AnimatePresence>
-      ) : (
+      ) : isLastRange ? (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           className="rounded-2xl bg-sage-50 p-4 text-sm leading-relaxed text-sage-800"
         >
           <InlineText text={t("builder.finalCongrats")} />
+        </motion.div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-2xl bg-sage-50 p-4 text-sm leading-relaxed text-sage-800"
+        >
+          🌱 {t("builder.partialDone")}
         </motion.div>
       )}
     </div>
